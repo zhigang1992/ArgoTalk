@@ -71,7 +71,8 @@ let __genderParser: Parser<User.Gender> = stringParser.flatMap({ string in
     return .failed()
 })
 
-func or<T>(left:Parser<T>, _ right: Parser<T>) -> Parser<T> {
+infix operator <|> { associativity left }
+func <|><T>(left: Parser<T>, right: Parser<T>) -> Parser<T> {
     return Parser<T> { input in
         if let result = left.parse(input) {
             return result
@@ -84,13 +85,14 @@ func parse<T>(string string: String, into value:T) -> Parser<T> {
     return stringParser.flatMap({ string == $0 ? .unit(value) : .failed() })
 }
 
-let genderParser: Parser<User.Gender> = or(
-    parse(string: "male", into: .Male),
-    parse(string: "female", into: .Female)
-)
+let genderParser: Parser<User.Gender> = parse(string: "male", into: .Male)
+    <|> parse(string: "female", into: .Female)
+    <|> parse(string: "boy", into: .Male)
+    <|> parse(string: "girl", into: .Female)
 
 genderParser.parse("male")
 genderParser.parse("female")
+genderParser.parse("girl")
 genderParser.parse("not gender")
 genderParser.parse(123)
 
