@@ -90,13 +90,15 @@ let genderParser: Parser<User.Gender> = parse(string: "male", into: .Male)
     <|> parse(string: "boy", into: .Male)
     <|> parse(string: "girl", into: .Female)
 
-genderParser.parse("male")
-genderParser.parse("female")
-genderParser.parse("girl")
-genderParser.parse("not gender")
-genderParser.parse(123)
+let userParser: Parser<User> = Parser<User> { input in
+    guard let dictionary = input as? NSDictionary else { return nil }
+    guard let id = dictionary["id"].flatMap(intParser.parse) else { return nil }
+    guard let name = dictionary["name"].flatMap(stringParser.parse) else { return nil }
+    guard let gender = dictionary["gender"].flatMap(genderParser.parse) else { return nil }
+    return User(id: id, name: name, gender: gender)
+}
 
-
+print(userParser.parse(userData))
 
 
 
