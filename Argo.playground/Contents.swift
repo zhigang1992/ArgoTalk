@@ -21,3 +21,6 @@ struct User {
 struct Parser<T> {
     let parse: AnyObject -> T?
 }
+
+let stringParser = Parser { $0 as? String }
+
