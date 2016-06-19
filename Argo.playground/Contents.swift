@@ -185,7 +185,30 @@ let userParser = curry(User.init)
     <*> "name"
     <*> "gender"
 
-print(userParser.parse(userData))
+let me:AnyObject = [
+    "id": 123,
+    "name": "Awesome Name",
+    "avatar": "http://www.google.com",
+    "followers": [
+        [
+            "id": 123,
+            "name": "Follower 1",
+            "gender": "male",
+        ],
+        [
+            "name": "Follower 2",
+            "id": 12345,
+            "gender": "Male",
+        ]
+    ]
+]
+
+struct Me {
+    let id: Int
+    let name: String
+    let avatar: String
+    let followers: [User]
+}
 
 
 
