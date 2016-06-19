@@ -210,5 +210,12 @@ struct Me {
     let followers: [User]
 }
 
+func curry<A,B,C,D,E>(function: (A,B,C,D)->E) -> A->B->C->D->E {
+    return { a in { b in { c in { d in function(a,b,c,d) } } } }
+}
 
-
+let meParser = curry(Me.init)
+    <^> "id"
+    <*> "name"
+    <*> "avatar"
+    <*> "followers"
