@@ -58,12 +58,19 @@ extension Parser {
     }
 }
 
-let genderParser = Parser<User.Gender> { input in
+let _genderParser = Parser<User.Gender> { input in
     guard let string = input as? String else { return nil }
     if string == "male" { return .Male }
     if string == "female" { return .Female }
     return nil
 }
+
+let genderParser: Parser<User.Gender> = stringParser.flatMap({ string in
+    if string == "male" { return .unit(.Male) }
+    if string == "female" { return .unit(.Female) }
+    return .failed()
+})
+
 
 genderParser.parse("male")
 genderParser.parse("female")
