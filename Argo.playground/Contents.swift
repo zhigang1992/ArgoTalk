@@ -99,10 +99,13 @@ let _userParser: Parser<User> = Parser<User> { input in
 }
 
 func dictionaryParser<T>(key: String, parser: Parser<T>) -> Parser<T> {
-    return Parser<T> { input in
-        guard let dictionary = input as? NSDictionary else { return nil }
-        return dictionary[key].flatMap(parser.parse)
-    }
+    let keys = key.componentsSeparatedByString(".").reverse()
+    return keys.reduce(parser, combine: { current, nextKey in
+        Parser<T> { input in
+            guard let dictionary = input as? NSDictionary else { return nil }
+            return dictionary[nextKey].flatMap(current.parse)
+        }
+    })
 }
 
 let __userParser: Parser<User> = Parser<User> { input in
@@ -188,7 +191,10 @@ let userParser = curry(User.init)
 let me:AnyObject = [
     "id": 123,
     "name": "Awesome Name",
-    "avatar": "http://www.google.com",
+    "avatar": [
+        "size": 100,
+        "url": "http://www.google.com"
+    ],
     "followers": [
         [
             "id": 123,
@@ -253,7 +259,7 @@ func <*><T: Parsable, U>(left: Parser<T?->U>, right: String) -> Parser<U> {
 let meParser = curry(Me.init)
     <^> "id"
     <*> "name"
-    <*> "avatar"
+    <*> "avatar.url"
     <*> "followers"
 
 print(meParser.parse(me))
