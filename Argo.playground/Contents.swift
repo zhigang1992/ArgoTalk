@@ -25,3 +25,5 @@ struct Parser<T> {
 let stringParser = Parser { $0 as? String }
 
 let numberParser = Parser { $0 as? Double }
+
+let intParser = Parser { $0 as? Int }
