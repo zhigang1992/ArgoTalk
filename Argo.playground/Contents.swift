@@ -39,6 +39,17 @@ extension Parser {
 
 let intParser = numberParser.map(Int.init)
 
+extension Parser {
+    func flatMap<U>(function: T->Parser<U>) -> Parser<U> {
+        return Parser<U> { input in
+            if let result = self.parse(input) {
+                return function(result).parse(input)
+            }
+            return nil
+        }
+    }
+}
+
 let genderParser = Parser<User.Gender> { input in
     guard let string = input as? String else { return nil }
     if string == "male" { return .Male }
