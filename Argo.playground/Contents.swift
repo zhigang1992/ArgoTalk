@@ -38,3 +38,21 @@ extension Parser {
 }
 
 let intParser = numberParser.map(Int.init)
+
+let genderParser = Parser<User.Gender> { input in
+    guard let string = input as? String else { return nil }
+    if string == "male" { return .Male }
+    if string == "female" { return .Female }
+    return nil
+}
+
+genderParser.parse("male")
+genderParser.parse("female")
+genderParser.parse("not gender")
+genderParser.parse(123)
+
+
+
+
+
+
