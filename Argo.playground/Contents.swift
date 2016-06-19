@@ -144,13 +144,48 @@ func curry<A,B,C,D>(function: (A,B,C)->D) -> (A->B->C->D) {
     return { a in { b in { c in function(a,b,c) } } }
 }
 
-let userParser = curry(User.init)
+
+protocol Parsable {
+    static var parser: Parser<Self> { get }
+}
+
+extension Int: Parsable {
+    static var parser: Parser<Int> {
+        return intParser
+    }
+}
+
+extension String: Parsable {
+    static var parser: Parser<String> {
+        return stringParser
+    }
+}
+
+extension User.Gender: Parsable {
+    static var parser: Parser<User.Gender> {
+        return genderParser
+    }
+}
+
+func <^><T: Parsable, U>(left: T->U, right: String) -> Parser<U> {
+    return left <^> dictionaryParser(right, parser: T.parser)
+}
+
+func <*><T: Parsable, U>(left: Parser<T->U>, right: String) -> Parser<U> {
+    return left <*> dictionaryParser(right, parser: T.parser)
+}
+
+let ____userParser = curry(User.init)
     <^> dictionaryParser("id", parser: intParser)
     <*> dictionaryParser("name", parser: stringParser)
     <*> dictionaryParser("gender", parser: genderParser)
 
-print(userParser.parse(userData))
+let userParser = curry(User.init)
+    <^> "id"
+    <*> "name"
+    <*> "gender"
 
+print(userParser.parse(userData))
 
 
 
