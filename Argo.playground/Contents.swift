@@ -40,6 +40,14 @@ extension Parser {
 let intParser = numberParser.map(Int.init)
 
 extension Parser {
+    static func unit(value: T) -> Parser<T> {
+        return Parser { _ in value }
+    }
+    
+    static func failed() -> Parser<T> {
+        return Parser { _ in nil }
+    }
+    
     func flatMap<U>(function: T->Parser<U>) -> Parser<U> {
         return Parser<U> { input in
             if let result = self.parse(input) {
