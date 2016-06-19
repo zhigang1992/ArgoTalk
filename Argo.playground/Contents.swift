@@ -116,6 +116,21 @@ let userParser: Parser<User> = Parser<User> { input in
     return User(id: id, name: name, gender: gender)
 }
 
+extension Parser {
+    func apply<U>(applicative: Parser<T->U>) -> Parser<U> {
+        return applicative.flatMap({self.map($0)})
+    }
+}
+
+let assemable: Int->String->User.Gender->User = { id in
+    { name in
+        { gender in
+            return User(id: id, name: name, gender: gender)
+        }
+    }
+}
+
+
 
 print(userParser.parse(userData))
 
