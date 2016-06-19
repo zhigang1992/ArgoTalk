@@ -130,12 +130,6 @@ let assemable: Int->String->User.Gender->User = { id in
     }
 }
 
-let idParser = dictionaryParser("id", parser: intParser)
-let nameParser = dictionaryParser("name", parser: stringParser)
-let genderP = dictionaryParser("gender", parser: genderParser)
-
-let ___userParser = genderP.apply(nameParser.apply(idParser.map(assemable)))
-
 infix operator <^> { associativity left }
 func <^><T, U>(left: T->U, right: Parser<T>) -> Parser<U> {
     return right.map(left)
@@ -151,9 +145,9 @@ func curry<A,B,C,D>(function: (A,B,C)->D) -> (A->B->C->D) {
 }
 
 let userParser = curry(User.init)
-    <^> idParser
-    <*> nameParser
-    <*> genderP
+    <^> dictionaryParser("id", parser: intParser)
+    <*> dictionaryParser("name", parser: stringParser)
+    <*> dictionaryParser("gender", parser: genderParser)
 
 print(userParser.parse(userData))
 
