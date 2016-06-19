@@ -146,7 +146,11 @@ func <*><T, U>(left: Parser<T->U>, right: Parser<T>) -> Parser<U> {
     return right.apply(left)
 }
 
-let userParser = assemable
+func curry<A,B,C,D>(function: (A,B,C)->D) -> (A->B->C->D) {
+    return { a in { b in { c in function(a,b,c) } } }
+}
+
+let userParser = curry(User.init)
     <^> idParser
     <*> nameParser
     <*> genderP
