@@ -18,3 +18,6 @@ struct User {
     let gender: Gender
 }
 
+struct Parser<T> {
+    let parse: AnyObject -> T?
+}
