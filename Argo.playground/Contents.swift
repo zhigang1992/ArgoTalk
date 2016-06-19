@@ -65,12 +65,29 @@ let _genderParser = Parser<User.Gender> { input in
     return nil
 }
 
-let genderParser: Parser<User.Gender> = stringParser.flatMap({ string in
+let __genderParser: Parser<User.Gender> = stringParser.flatMap({ string in
     if string == "male" { return .unit(.Male) }
     if string == "female" { return .unit(.Female) }
     return .failed()
 })
 
+func or<T>(left:Parser<T>, _ right: Parser<T>) -> Parser<T> {
+    return Parser<T> { input in
+        if let result = left.parse(input) {
+            return result
+        }
+        return right.parse(input)
+    }
+}
+
+func parse<T>(string string: String, into value:T) -> Parser<T> {
+    return stringParser.flatMap({ string == $0 ? .unit(value) : .failed() })
+}
+
+let genderParser: Parser<User.Gender> = or(
+    parse(string: "male", into: .Male),
+    parse(string: "female", into: .Female)
+)
 
 genderParser.parse("male")
 genderParser.parse("female")
