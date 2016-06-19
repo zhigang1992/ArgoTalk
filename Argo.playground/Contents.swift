@@ -26,4 +26,15 @@ let stringParser = Parser { $0 as? String }
 
 let numberParser = Parser { $0 as? Double }
 
-let intParser = Parser { $0 as? Int }
+extension Parser {
+    func map<U>(function: T->U) -> Parser<U> {
+        return Parser<U> { input in
+            if let result = self.parse(input) {
+                return function(result)
+            }
+            return nil
+        }
+    }
+}
+
+let intParser = numberParser.map(Int.init)
