@@ -214,8 +214,23 @@ func curry<A,B,C,D,E>(function: (A,B,C,D)->E) -> A->B->C->D->E {
     return { a in { b in { c in { d in function(a,b,c,d) } } } }
 }
 
+func arrayParser<T>(parser: Parser<T>) -> Parser<[T]> {
+    return Parser<[T]> { input in
+        guard let array = input as? NSArray else { return nil }
+        return array.flatMap(parser.parse)
+    }
+}
+
+extension User : Parsable {
+    static var parser: Parser<User> {
+        return userParser
+    }
+}
+
 let meParser = curry(Me.init)
     <^> "id"
     <*> "name"
     <*> "avatar"
-    <*> "followers"
+    <*> dictionaryParser("followers", parser: arrayParser(User.parser))
+
+print(meParser.parse(me))
