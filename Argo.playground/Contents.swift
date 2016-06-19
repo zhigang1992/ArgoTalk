@@ -206,7 +206,7 @@ let me:AnyObject = [
 struct Me {
     let id: Int
     let name: String
-    let avatar: String
+    let avatar: String?
     let followers: [User]
 }
 
@@ -233,6 +233,20 @@ func <^><T: Parsable, U>(left: [T]->U, right: String) -> Parser<U> {
 
 func <*><T: Parsable, U>(left: Parser<[T]->U>, right: String) -> Parser<U> {
     return left <*> dictionaryParser(right, parser: arrayParser(T.parser))
+}
+
+func optionalParser<T>(parser:Parser<T>) -> Parser<T?> {
+    return Parser<T?> { input in
+        return Optional.Some(parser.parse(input))
+    }
+}
+
+func <^><T: Parsable, U>(left: T?->U, right: String) -> Parser<U> {
+    return left <^> optionalParser(dictionaryParser(right, parser: T.parser))
+}
+
+func <*><T: Parsable, U>(left: Parser<T?->U>, right: String) -> Parser<U> {
+    return left <*> optionalParser(dictionaryParser(right, parser: T.parser))
 }
 
 
