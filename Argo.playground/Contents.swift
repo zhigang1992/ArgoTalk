@@ -105,7 +105,7 @@ func dictionaryParser<T>(key: String, parser: Parser<T>) -> Parser<T> {
     }
 }
 
-let userParser: Parser<User> = Parser<User> { input in
+let __userParser: Parser<User> = Parser<User> { input in
     let idParser = dictionaryParser("id", parser: intParser)
     let nameParser = dictionaryParser("name", parser: stringParser)
     let genderP = dictionaryParser("gender", parser: genderParser)
@@ -130,7 +130,26 @@ let assemable: Int->String->User.Gender->User = { id in
     }
 }
 
+let idParser = dictionaryParser("id", parser: intParser)
+let nameParser = dictionaryParser("name", parser: stringParser)
+let genderP = dictionaryParser("gender", parser: genderParser)
 
+let ___userParser = genderP.apply(nameParser.apply(idParser.map(assemable)))
+
+infix operator <^> { associativity left }
+func <^><T, U>(left: T->U, right: Parser<T>) -> Parser<U> {
+    return right.map(left)
+}
+
+infix operator <*> { associativity left }
+func <*><T, U>(left: Parser<T->U>, right: Parser<T>) -> Parser<U> {
+    return right.apply(left)
+}
+
+let userParser = assemable
+    <^> idParser
+    <*> nameParser
+    <*> genderP
 
 print(userParser.parse(userData))
 
