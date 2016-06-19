@@ -227,10 +227,22 @@ extension User : Parsable {
     }
 }
 
+func <^><T: Parsable, U>(left: [T]->U, right: String) -> Parser<U> {
+    return left <^> dictionaryParser(right, parser: arrayParser(T.parser))
+}
+
+func <*><T: Parsable, U>(left: Parser<[T]->U>, right: String) -> Parser<U> {
+    return left <*> dictionaryParser(right, parser: arrayParser(T.parser))
+}
+
+
 let meParser = curry(Me.init)
     <^> "id"
     <*> "name"
     <*> "avatar"
-    <*> dictionaryParser("followers", parser: arrayParser(User.parser))
+    <*> "followers"
 
 print(meParser.parse(me))
+
+
+
