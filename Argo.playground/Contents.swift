@@ -125,7 +125,7 @@ extension Parser {
     }
 }
 
-let assemable: Int->String->User.Gender->User = { id in
+let assemble: Int->String->User.Gender->User = { id in
     { name in
         { gender in
             return User(id: id, name: name, gender: gender)
